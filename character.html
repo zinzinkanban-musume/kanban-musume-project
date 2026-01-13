@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>キャラクター — 看板娘プロジェクト</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1 id="char-name">キャラクター</h1>
+    <nav>
+      <a href="index.html">メイン</a>
+      <a href="characters.html">一覧へ戻る</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="char-detail" class="detail">
+      <!-- JS がここに内容を差し込みます -->
+    </section>
+  </main>
+
+  <script>
+    function getQuery(name) {
+      const url = new URL(location.href);
+      return url.searchParams.get(name);
+    }
+    async function renderCharacter() {
+      const id = getQuery('id');
+      if (!id) {
+        document.getElementById('char-detail').textContent = 'キャラクターが指定されていません';
+        return;
+      }
+      try {
+        const res = await fetch('data/characters.json');
+        const data = await res.json();
+        const ch = data.find(c => c.id === id);
+        if (!ch) {
+          document.getElementById('char-detail').textContent = 'キャラクターが見つかりません';
+          return;
+        }
+        document.getElementById('char-name').textContent = ch.name;
+        document.getElementById('char-detail').innerHTML = `
+          <img class="detail-img" src="${ch.image || 'assets/placeholder.png'}" alt="${ch.name}" />
+          <div class="detail-info">
+            <h2>${ch.name}</h2>
+            <p class="role">${ch.role || ''}</p>
+            <p class="bio">${ch.bio || ''}</p>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('char-detail').textContent = '読み込みに失敗しました';
+      }
+    }
+    renderCharacter();
+  </script>
+
+  <footer class="site-footer">
+    <small>© 看板娘プロジェクト</small>
+  </footer>
+</body>
+</html>

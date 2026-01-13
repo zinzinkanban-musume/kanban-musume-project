@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>キャラクター紹介 — 看板娘プロジェクト</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>キャラクター一覧</h1>
+    <nav>
+      <a href="index.html">メイン</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="characters-grid" class="grid"></section>
+  </main>
+
+  <script>
+    async function loadCharacters() {
+      try {
+        const res = await fetch('data/characters.json');
+        const data = await res.json();
+        const grid = document.getElementById('characters-grid');
+        data.forEach(ch => {
+          const card = document.createElement('article');
+          card.className = 'card';
+          card.innerHTML = `
+            <a href="character.html?id=${encodeURIComponent(ch.id)}">
+              <img src="${ch.image || 'assets/placeholder.png'}" alt="${ch.name}" />
+              <h3>${ch.name}</h3>
+              <p class="role">${ch.role || ''}</p>
+            </a>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('characters-grid').textContent = '読み込みに失敗しました';
+      }
+    }
+    loadCharacters();
+  </script>
+
+  <footer class="site-footer">
+    <small>© 看板娘プロジェクト</small>
+  </footer>
+</body>
+</html>
